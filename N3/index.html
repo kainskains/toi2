@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>専門英語：問3 実践テスト</title>
+    <style>
+        body { font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #f0f4f8; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .container { background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); max-width: 800px; width: 100%; box-sizing: border-box; }
+        h1 { color: #2c3e50; font-size: 1.6em; border-bottom: 3px solid #e67e22; padding-bottom: 10px; margin-bottom: 20px; text-align: center; } /* 問3用に色変更 */
+        .progress { color: #7f8c8d; margin-bottom: 10px; text-align: right; font-weight: bold; }
+        .question-box { margin-bottom: 30px; text-align: left; min-height: 120px; }
+        .jp-text { color: #666; font-size: 0.95em; margin-bottom: 10px; background: #f9f9f9; padding: 15px; border-radius: 5px; line-height: 1.4; }
+        .en-text { font-size: 1.25em; font-weight: bold; line-height: 1.5; color: #333; padding: 10px; }
+        
+        /* 選択肢なし単一ボタン用のスタイル */
+        .single-action-area { margin-top: 25px; text-align: center; }
+        
+        button.action-btn {
+            padding: 15px 40px; font-size: 1.2em; border: none; border-radius: 30px;
+            cursor: pointer; transition: 0.2s; font-weight: bold; color: white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        button.action-btn:active { transform: translateY(2px); box-shadow: none; }
+        
+        .btn-show-answer { background-color: #3498db; }
+        .btn-show-answer:hover { background-color: #2980b9; }
+
+        .answer-display-area {
+            margin-top: 20px; padding: 20px; background: #fff8e1; border-radius: 10px; border: 2px solid #f1c40f;
+            display: none; animation: fadeIn 0.3s ease;
+        }
+        .correct-answer-text { color: #d35400; font-size: 1.5em; font-weight: bold; margin-bottom: 20px; display: block; }
+        
+        .result-btns { display: flex; gap: 20px; justify-content: center; margin-top: 15px; }
+        .btn-correct { background-color: #2ecc71; }
+        .btn-correct:hover { background-color: #27ae60; }
+        .btn-incorrect { background-color: #e74c3c; }
+        .btn-incorrect:hover { background-color: #c0392b; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .next-area { margin-top: 30px; text-align: center; }
+        #next-btn {
+            background-color: #95a5a6; color: white; border: none; padding: 12px 50px;
+            border-radius: 25px; font-size: 1.1em; cursor: pointer; display: none;
+        }
+        #result-screen { display: none; text-align: center; }
+        .score-val { font-size: 4em; color: #e67e22; margin: 20px 0; font-weight: bold; }
+
+        @media (max-width: 600px) {
+            body { padding: 10px; }
+            .container { padding: 20px 15px; }
+            h1 { font-size: 1.3em; margin-bottom: 15px; }
+            .result-btns { flex-direction: column; gap: 10px; }
+            .action-btn { width: 100%; padding: 15px; font-size: 1.1em; box-sizing: border-box; }
+            .en-text { font-size: 1.1em; padding: 5px; }
+            .jp-text { font-size: 0.9em; padding: 10px; }
+            .score-val { font-size: 3em; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="nav-links" style="margin-bottom: 20px;">
+        <a href="../index.html" style="text-decoration: none; color: #7f8c8d; font-weight: bold; background: #eee; padding: 5px 15px; border-radius: 15px;">&lt; メニューに戻る</a>
+    </div>
+    <div id="quiz-screen">
+        <h1>問3 実践テスト (サンプル)</h1>
+        <div class="progress" id="progress">1 / 17</div>
+        <div class="question-box">
+            <div id="jp-display" class="jp-text"></div>
+            <div id="en-display" class="en-text"></div>
+        </div>
+        
+        <!-- 答えを見るボタン -->
+        <div class="single-action-area" id="action-area">
+            <button class="action-btn btn-show-answer" onclick="showAnswer()">答えを見る</button>
+        </div>
+
+        <!-- 答え表示と自己申告エリア -->
+        <div class="answer-display-area" id="answer-area">
+            <div>正解:</div>
+            <span class="correct-answer-text" id="correct-answer-display"></span>
+            
+            <div class="result-btns">
+                <button class="action-btn btn-correct" onclick="registerResult(true)">正解した！</button>
+                <button class="action-btn btn-incorrect" onclick="registerResult(false)">間違えた...</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="result-screen">
+        <h1>全問終了！</h1>
+        <p>スコア：</p>
+        <div class="score-val" id="final-score">0 / 19</div>
+        
+        <div id="review-area" style="display:none; text-align:left; max-width: 100%; margin: 20px auto;">
+            <h3 style="color:#e74c3c; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top:30px;">間違えた問題の復習</h3>
+            <div id="review-list"></div>
+        </div>
+
+        <button onclick="location.reload()" style="background:#3498db; color:white; border:none; padding:15px 40px; border-radius:30px; cursor:pointer; margin-top:20px;">もう一度挑戦する</button>
+    </div>
+</div>
+
+<script>
+    // 全PDFから抽出した全フレーズリスト (問3用)
+    const questions = [
+        { q: "In C programs, a statement is ( ) a semicolon.", a: "followed by", jp: "C のプログラムでは文の後にセミコロンが来る。" },
+        { q: "The joint density p(x,y) is multiplied by the prior density ρ(y) of y ( ) integration over the domain of y.", a: "followed by", jp: "同時密度 p(x,y) に y の事前密度 ρ(y) を掛けて、その後に y の定義域上で積分を行う。" },
+        { q: "Let L, W, and H be the length, the width and the height, ( ).", a: "respectively", jp: "長さ、幅、高さをそれぞれ L、W、H とする。" },
+        { q: "Equation (2.4) is obtained by replacing x and y in Eq. (2.3) by constants a and b ( ).", a: "respectively", jp: "式 (2.4) は式 (2.3) の x、y をそれぞれ定数 a、b に置き換えたものである。" },
+        { q: "This algorithm requires only a small number of operations, ( ) a considerable gain in computation speed.", a: "resulting in", jp: "このアルゴリズムは少数の演算しか用いない。その結果、計算速度が大幅に向上する。" },
+        { q: "If we check all the input data one by one ..., we ( ) the desired solution.", a: "end up with", jp: "入力データを一つずつ調べて…いけば、最後に望ましい解が得られる。" },
+        { q: "All the terms are ( ) to be zero if the denominator vanishes.", a: "understood", jp: "すべての項は分母が 0 になるときは 0 であると約束する。" },
+        { q: "For simplicity, the domains of the variables are ( ).", a: "understood", jp: "簡単のため、変数の定義域は省略する（明らかであるため）。" },
+        { q: "We ( ) that the desired solution ( ) the following conditions.", a: "require / satisfy", jp: "求める解は次の条件を満たさなければならないとする。" },
+        { q: "It is ( ) that the function f(x) ( ) positive in the interval [0,1].", a: "required / be", jp: "関数 f(x)は区間[0,1]で正でなければならない。" },
+        { q: "This algorithm ( ) solve linear equations ... fairly efficiently.", a: "allows us to", jp: "このアルゴリズムによって（我々は）線形方程式をかなり効率的に解くことができるようになる。" },
+        { q: "We examine this special case out of theoretical curiosity, ( ) such a phenomenon frequently arises in real situations.", a: "not that", jp: "この特別な場合を調べるのは理論的な好奇心からであり、実際の状況でそのような現象がよく生じるというわけではない。" },
+        { q: "( ) we can obtain a unique solution irrespective of the sign of the constant a.", a: "It follows that", jp: "ゆえに定数の符号によらず唯一の解を得ることができる。" },
+        { q: "The loss ( ) efficiency is compensated for by the gain ( ) accuracy.", a: "in / in", jp: "計算の効率は低下しても、その分精度が向上している。" },
+        { q: "The solutions of these two equations coincide, ( ) both have solutions.", a: "provided", jp: "これら二つの方程式は、両方に解があるとすればそれらは一致する。" },
+        { q: "This equation is ( ) Cramer's formula.", a: "known as", jp: "この方程式は「クラメルの公式」と呼ばれる。" },
+        { q: "Inference of this type is ( ) Bayesian estimation.", a: "referred to as", jp: "このような推論は「ベイズ推定」と呼ばれる。" },
+        { q: "( ), we first have to check if the input sequence is an empty set.", a: "Needless to say", jp: "言うまでもなく、まず最初に入力列が空集合かどうかを調べなければならない。" },
+        { q: "( ) pointed out in the preceding section, special care is necessary...", a: "As", jp: "前節で指摘したように、特別の注意が必要である。" },
+        { q: "( ) the size of the problem becomes larger, the computation becomes less efficient.", a: "As", jp: "問題のサイズが大きくなるにつれて、計算はより非効率になる。" },
+        { q: "( ) the preceding section, we use the least squares method for this problem, too.", a: "As in", jp: "この問題に対しても、前節と同様に最小二乗法を用いる。" },
+        { q: "This is ( ) this type of problem is solved.", a: "the way", jp: "この種の問題はこのようにして解く。" },
+        { q: "( ) the desired solution is readily obtained by searching...", a: "It appears that", jp: "望ましい解は探索すれば直ちに得られるように思える。" }
+    ];
+
+    let currentIndex = 0;
+    let score = 0;
+    let wrongLog = [];
+
+    // 配列をシャッフルするヘルパー
+    function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    // クイズ開始時に問題をシャッフル
+    shuffle(questions);
+
+    function displayQuestion() {
+        if(currentIndex >= questions.length) {
+            showResult();
+            return;
+        }
+
+        const q = questions[currentIndex];
+        document.getElementById('progress').innerText = `${currentIndex + 1} / ${questions.length}`;
+        document.getElementById('jp-display').innerText = q.jp;
+        document.getElementById('en-display').innerText = q.q;
+        
+        // 状態をリセット
+        document.getElementById('action-area').style.display = 'block';
+        document.getElementById('answer-area').style.display = 'none';
+        document.getElementById('correct-answer-display').innerText = q.a;
+    }
+
+    function showAnswer() {
+        document.getElementById('action-area').style.display = 'none';
+        document.getElementById('answer-area').style.display = 'block';
+    }
+
+    function registerResult(isCorrect) {
+        const q = questions[currentIndex];
+        if(isCorrect) {
+            score++;
+        } else {
+            wrongLog.push({
+                q: q,
+                yours: "不正解" // 自己申告なので具体的な誤答はなし
+            });
+        }
+        
+        currentIndex++;
+        displayQuestion(); // 次の問題へ（待機なしで即時遷移）
+    }
+
+    function showResult() {
+        document.getElementById('quiz-screen').style.display = 'none';
+        document.getElementById('result-screen').style.display = 'block';
+        document.getElementById('final-score').innerText = `${score} / ${questions.length}`;
+
+        if(wrongLog.length > 0) {
+            const list = document.getElementById('review-list');
+            list.innerHTML = '';
+            wrongLog.forEach((item, idx) => {
+                const div = document.createElement('div');
+                div.style.background = '#fff';
+                div.style.padding = '15px';
+                div.style.marginBottom = '10px';
+                div.style.borderRadius = '8px';
+                div.style.border = '1px solid #ddd';
+                div.style.borderLeft = '5px solid #e74c3c';
+                
+                div.innerHTML = `
+                    <div style="font-size:0.9em; color:#7f8c8d; margin-bottom:5px;">${item.q.jp}</div>
+                    <div style="font-weight:bold; margin-bottom:8px; font-size:1.1em;">${item.q.q}</div>
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span style="color:#e74c3c; font-weight:bold;">結果: 不正解</span>
+                        <span style="color:#2ecc71; font-weight:bold; background:#eafaf1; padding:2px 8px; border-radius:4px;">正解: ${item.q.a}</span>
+                    </div>
+                `;
+                list.appendChild(div);
+            });
+            document.getElementById('review-area').style.display = 'block';
+        }
+    }
+
+    displayQuestion();
+</script>
+</body>
+</html>
