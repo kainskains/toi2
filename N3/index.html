@@ -2,10 +2,11 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>専門英語：問3 実践テスト</title>
     <style>
         body { font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #f0f4f8; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-        .container { background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); max-width: 800px; width: 100%; }
+        .container { background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); max-width: 800px; width: 100%; box-sizing: border-box; }
         h1 { color: #2c3e50; font-size: 1.6em; border-bottom: 3px solid #e67e22; padding-bottom: 10px; margin-bottom: 20px; text-align: center; } /* 問3用に色変更 */
         .progress { color: #7f8c8d; margin-bottom: 10px; text-align: right; font-weight: bold; }
         .question-box { margin-bottom: 30px; text-align: left; min-height: 120px; }
@@ -46,6 +47,17 @@
         }
         #result-screen { display: none; text-align: center; }
         .score-val { font-size: 4em; color: #e67e22; margin: 20px 0; font-weight: bold; }
+
+        @media (max-width: 600px) {
+            body { padding: 10px; }
+            .container { padding: 20px 15px; }
+            h1 { font-size: 1.3em; margin-bottom: 15px; }
+            .result-btns { flex-direction: column; gap: 10px; }
+            .action-btn { width: 100%; padding: 15px; font-size: 1.1em; box-sizing: border-box; }
+            .en-text { font-size: 1.1em; padding: 5px; }
+            .jp-text { font-size: 0.9em; padding: 10px; }
+            .score-val { font-size: 3em; }
+        }
     </style>
 </head>
 <body>
